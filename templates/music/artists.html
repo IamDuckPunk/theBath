@@ -1,0 +1,31 @@
+{% extends 'base.html' %} {% block head %}
+<title> Artists </title>
+{% endblock %} {% block body %}
+<div class='container'>
+    <!-- Table-->
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <!-- Artist Favourite-->
+                <th scope="col">Artist</th>
+                <th scope="col">Favourites</th>
+            </tr>
+        </thead>
+        <tbody>
+
+            <!-- List of artists-->
+            {% for artist in Artists %}
+            <tr>
+                <td>
+                    <a class="text-primary" href="{% url 'details_artist' artist.id%}">{{artist.artist}}</a>
+                </td>
+                <td>#</td>
+                <td><a class="btn btn-danger" href="{% url 'delete_artist' artist.id %}" role="button">Delete {{artist.artist }}</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a class="btn btn-primary" href="{% url 'create_artist' %}" role="button">Add Artist</a>
+</div>
+
+{% endblock %}

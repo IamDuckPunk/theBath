@@ -1,0 +1,34 @@
+{% extends 'base.html' %} {% block head %}
+<title>Genres</title>
+{% endblock %} {% block body %}
+<div class='container'>
+    <br>
+    <!-- Table-->
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <!-- Genre Favourite-->
+                <th scope="col">Genre</th>
+                <th scope="col">Favourites</th>
+                
+            </tr>
+        </thead>
+        <tbody>
+
+            <!-- List of genres-->
+            {% for genre in Genres %}
+            <tr>
+                <td>
+                    <a class="text-primary" href="{% url 'details_genre' genre.id%}">{{genre.genre_title}}</a>
+                </td>
+                <td>#</td>
+                <td><a class="btn btn-danger" href="{% url 'delete_genre' genre.id %}" role="button">Delete {{genre.genre_title }}</a></td>
+            </tr>
+            {% endfor %}
+
+        </tbody>
+    </table>
+    <a class="btn btn-primary" href="{% url 'create_genre' %}" role="button">Add Genre</a>
+</div>
+
+{% endblock %}

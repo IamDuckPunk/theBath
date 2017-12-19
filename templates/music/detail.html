@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+<head>
+    {% block head %}
+    <title>{{album.album_title}}</title>
+    {% endblock head %}
+</head>
+{% block body %}
+<div class='container'>
+    <br>
+    <h3>{{album.album_title}}
+        <small class="text-muted">by</small> {{album.artist}}</h3>
+        {% if album.album_cover %}
+        <img src="{{ album.album_cover.url }}" class="img-responsive" width=300 length=300>
+        {% endif %}
+    <!-- If songs in Album -->
+    {% if album.song_set.all %}
+    <!-- Table-->
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <!--Numer Song-->
+                <th scope="col">Number</th>
+                <th scope="col">Song title</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- List of songs-->
+            {% for song in album.song_set.all %}
+            <tr>
+                <td>{{song.position}}</td>
+                <td>{{song}}</td>
+
+            </tr>
+            {% endfor %}
+            <!-- Else - no songs -->
+            {% else %}
+            <h4 class="text-danger">No song's created</h4>
+            <a class="btn btn-primary" href=# role="button">Add Song</a>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
