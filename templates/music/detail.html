@@ -10,9 +10,8 @@
     <br>
     <h3>{{album.album_title}}
         <small class="text-muted">by</small> {{album.artist}}</h3>
-        {% if album.album_cover %}
-        <img src="{{ album.album_cover.url }}" class="img-responsive" width=300 length=300>
-        {% endif %}
+    {% if album.album_cover %}
+    <img src="{{ album.album_cover.url }}" class="img-responsive" width=300 length=300> {% endif %}
     <!-- If songs in Album -->
     {% if album.song_set.all %}
     <!-- Table-->
@@ -35,10 +34,30 @@
             {% endfor %}
             <!-- Else - no songs -->
             {% else %}
-            <h4 class="text-danger">No song's created</h4>
-            <a class="btn btn-primary" href=# role="button">Add Song</a>
-            {% endif %}
-        </tbody>
-    </table>
+            <h1>GHJKL:</h1>
+
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <!--Number Song-->
+                        {% for head in headers %}
+                        <th scope="col">{{head}}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- List of songs-->
+                    {% for song in songs %}
+                    <tr>
+                        {% for item in song %}
+                        <td>{{item}}</td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                    <h4 class="text-danger">No song's created</h4>
+                    <a class="btn btn-primary" href=# role="button">Add Song</a>
+                    {% endif %}
+                </tbody>
+            </table>
 </div>
 {% endblock %}

@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from . import models as music_models
 from . import forms as music_forms
-
+from .parsers import parse
 
 def albums(request):
     # Pass list of albums into template
@@ -35,7 +35,25 @@ def about(request):
 def details_album(request, album_id):
 
     album = get_object_or_404(music_models.Album, pk=album_id)
-    return render(request, 'music/detail.html', {'album': album})
+    try:
+        info, headers, songs = parse(album)
+        print(headers)
+    except Exception:
+        print("I'm here")
+        args = {
+            'album': album,
+            'info': None,
+            'headers': None,
+            'songs': None,
+        }
+    else:
+        args = {
+            'album': album,
+            'info': info,
+            'headers': headers,
+            'songs': songs,
+        }
+    return render(request, 'music/detail.html', args)
 
 
 def details_artist(request, artist_id):
@@ -127,3 +145,18 @@ def delete_artist(request, artist_id):
     artist = music_models.Artist.objects.get(pk=artist_id)
     artist.delete()
     return render(request, 'music/artists.html', {'artist': artist})
+
+
+def create_album_wiki(request):
+    
+    form = music_forms.AlbumFormWiki(request.POST or None) # bunch of html code
+    if form.is_valid():
+        album = form.save(commit=False)
+
+        album.save()
+        return render(request, 'music/detail.html', {'album': album})
+    else:
+        context = {
+            "form": form,
+        }
+        return render(request, 'music/create_album.html', context)
