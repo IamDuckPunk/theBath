@@ -1,7 +1,10 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect, render_to_response
 from . import models as music_models
 from . import forms as music_forms
 from .parsers import parse
+from Account.models import UserProfile
+from django.db.models import Q
+
 
 def albums(request):
     # Pass list of albums into template
@@ -32,14 +35,14 @@ def about(request):
     return render(request, 'about.html')
 
 
-def details_album(request, album_id):
+def details_album(request, pk):
 
-    album = get_object_or_404(music_models.Album, pk=album_id)
+    album = get_object_or_404(music_models.Album, pk=pk)
     try:
-        info, headers, songs = parse(album)
-        print(headers)
-    except Exception:
-        print("I'm here")
+        info, headers, songs = parse(str(album))
+
+    except Exception as err:
+        print(err)
         args = {
             'album': album,
             'info': None,
@@ -56,15 +59,15 @@ def details_album(request, album_id):
     return render(request, 'music/detail.html', args)
 
 
-def details_artist(request, artist_id):
+def details_artist(request, pk):
 
-    artist = get_object_or_404(music_models.Artist, pk=artist_id)
+    artist = get_object_or_404(music_models.Artist, pk=pk)
     return render(request, 'music/detail_artist.html', {'artist': artist})
 
 
-def details_genre(request, genre_id):
+def details_genre(request, pk):
 
-    genre = get_object_or_404(music_models.Genre, pk=genre_id)
+    genre = get_object_or_404(music_models.Genre, pk=pk)
     return render(request, 'music/detail_genre.html', {'genre': genre})
 
 
@@ -76,15 +79,28 @@ def favourite_album(request, album_id):
     elif album.is_favourite == False:
         album.is_favourite = True
     album.save()
-    return render(request, 'music/albums.html', {'album': album})
+    return redirect('/albums/')
 
 
 def favourite_artist(request, artist_id):
-    pass
+    artist = get_object_or_404(music_models.Artist, pk=artist_id)
+    if artist.is_favourite == True:
+        artist.is_favourite = False
+    elif artist.is_favourite == False:
+        artist.is_favourite = True
+    artist.save()
+    return redirect('/artists/')
 
 
 def favourite_genre(request, genre_id):
-    pass
+
+    genre = get_object_or_404(music_models.Genre, pk=genre_id)
+    if genre.is_favourite == True:
+        genre.is_favourite = False
+    elif genre.is_favourite == False:
+        genre.is_favourite = True
+    genre.save()
+    return redirect('/genres/')
 
 
 def create_artist(request):
@@ -117,10 +133,9 @@ def create_genre(request):
 
 def create_album(request):
 
-    form = music_forms.AlbumForm(request.POST or None) # bunch of html code
+    form = music_forms.AlbumForm(request.POST or None)  # bunch of html code
     if form.is_valid():
         album = form.save(commit=False)
-        print(album)
         album.save()
         return render(request, 'music/detail.html', {'album': album})
     else:
@@ -128,6 +143,7 @@ def create_album(request):
             "form": form,
         }
         return render(request, 'music/create_album.html', context)
+
 
 def delete_genre(request, genre_id):
     genre = music_models.Genre.objects.get(pk=genre_id)
@@ -146,13 +162,13 @@ def delete_artist(request, artist_id):
     artist.delete()
     return render(request, 'music/artists.html', {'artist': artist})
 
-
+# TESTING
 def create_album_wiki(request):
-    
-    form = music_forms.AlbumFormWiki(request.POST or None) # bunch of html code
+
+    form = music_forms.AlbumFormWiki(
+        request.POST or None)  # bunch of html code
     if form.is_valid():
         album = form.save(commit=False)
-
         album.save()
         return render(request, 'music/detail.html', {'album': album})
     else:
@@ -160,3 +176,31 @@ def create_album_wiki(request):
             "form": form,
         }
         return render(request, 'music/create_album.html', context)
+
+
+
+def search_albums(request):
+    query = request.GET.get("q")
+    print(query)
+    if query:
+        albums = music_models.Album.objects.filter(
+            Q(album_title__icontains=query)
+        ).distinct()
+        artists = music_models.Artist.objects.filter(
+            Q(artist__icontains=query)
+        ).distinct()
+        genres = music_models.Genre.objects.filter(
+            Q(genre_title__icontains=query)
+        ).distinct()
+        args = {
+            'albums': albums,
+            'artists': artists,
+            'genres': genres,
+        }
+        return render(request, 'search.html', args)
+    else:
+        err = "Nothing was typed"
+        return render(request, 'search.html', {'err':err})
+
+
+

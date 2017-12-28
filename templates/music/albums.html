@@ -38,6 +38,7 @@
                 </td>
                 <td>{{album.realeased}}</td>
                 <td>#</td>
+               
                 {% if album.is_favourite %}
                 <td>
                     <a class="text-success" href="{% url 'favourite_album' album.id%}">Yes</a>
@@ -47,6 +48,9 @@
                     <a class="text-danger" href="{% url 'favourite_album' album.id%}">No</a>
                 </td>
                 {% endif %}
+                <td>
+                    <a class="btn btn-primary" href="{% url 'edit_album' album.id %}" role="button">Edit </a>
+                </td>
                 <td>
                     <a class="btn btn-danger" href="{% url 'delete_album' album.id %}" role="button">Delete </a>
                 </td>

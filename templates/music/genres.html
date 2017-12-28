@@ -9,7 +9,7 @@
             <tr>
                 <!-- Genre Favourite-->
                 <th scope="col">Genre</th>
-                <th scope="col">Favourites</th>
+                <th scope="col">Favourite</th>
                 
             </tr>
         </thead>
@@ -21,7 +21,15 @@
                 <td>
                     <a class="text-primary" href="{% url 'details_genre' genre.id%}">{{genre.genre_title}}</a>
                 </td>
-                <td>#</td>
+                {% if genre.is_favourite %}
+                <td>
+                    <a class="text-success" href="{% url 'favourite_genre' genre.id%}">Yes</a>
+                </td>
+                {% else %}
+                <td>
+                    <a class="text-danger" href="{% url 'favourite_genre' genre.id%}">No</a>
+                </td>
+                {% endif %}
                 <td><a class="btn btn-danger" href="{% url 'delete_genre' genre.id %}" role="button">Delete {{genre.genre_title }}</a></td>
             </tr>
             {% endfor %}

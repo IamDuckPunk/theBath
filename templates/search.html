@@ -1,0 +1,37 @@
+{% extends 'base.html' %} 
+{% block head %} <title>Search for {{request.GET.q}}</title> {% endblock %}
+{% block body %}
+<div class="container">
+    <br>
+    {% if err %}
+    <h4 class="text-danger">{{err}}</h4>
+    {% endif %}
+    {% if albums %}
+    <h3 class="text-primary">Here's some albums:</h3>
+    {% for album in albums %}
+    <h4>
+        <a class="text-info" href="{{ album.get_absolute_url }}">{{ album.album_title }} by {{album.artist}} </a>
+        <a class="text-muted"> by </a>
+        <a class="text-info" href="{{ album.artist.get_absolute_url }}"> {{album.artist}} </a>
+    </h4>
+    {% endfor %}
+    {% endif %} <br>{% if artists %}
+    <h3 class="text-primary">Here's some artists:</h3>
+    {% for artist in artists %}
+    <h4>
+        <a class="text-info" href="{{ artist.get_absolute_url }}">{{ artist.artist }}  </a>
+    </h4>
+    {% endfor %}
+    {% endif %}
+    <br>
+    {%if genres%}
+    <h3 class="text-primary">Here's some genres:</h3>
+    {% for genre in genres %}
+    <h4>
+        <a class="text-info" href="{{ genre.get_absolute_url }}">{{ genre.genre_title }} </a>
+    </h4>
+    {% endfor %}
+    {%  if not request.GET.q %}
+    <h4> Nothing to show :(</h4>
+    {% endif %}{% endif %}
+</div>{% endblock %}

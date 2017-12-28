@@ -26,9 +26,15 @@
             <!-- List of songs-->
             {% for album in artist.album_set.all %}
             <tr>
+                {% if album.album_cover %}
                 <td>
                     <img src="{{ album.album_cover.url }}" class="img-responsive" width=55 length=55>
                 </td>
+                {% else %}
+                <td>
+                    <h3> No img </h3>
+                </td>
+                {% endif %}
                 <td>
                     <a class="text-primary" href="{% url 'details_album' album.id%}">{{album.album_title}}</a>
                 </td>

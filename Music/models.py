@@ -1,4 +1,6 @@
 from django.db import models
+from django.urls import reverse
+from django.urls import reverse
 
 
 class Genre(models.Model):
@@ -10,7 +12,9 @@ class Genre(models.Model):
 
     def __str__(self):
         return self.genre_title
-
+    
+    def get_absolute_url(self):
+        return reverse('details_genre', kwargs={'pk': self.pk})
 
 class Artist(models.Model):
     
@@ -23,7 +27,9 @@ class Artist(models.Model):
 
     def __str__(self):
         return self.artist
-   
+
+    def get_absolute_url(self):
+        return reverse('details_artist', kwargs={'pk': self.pk})
 
 class Album(models.Model):
     
@@ -43,6 +49,8 @@ class Album(models.Model):
     def __str__(self):
         return self.album_title
 
+    def get_absolute_url(self):
+        return reverse('details_album', kwargs={'pk': self.pk})
 
 class Song(models.Model):
     

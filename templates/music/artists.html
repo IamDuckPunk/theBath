@@ -8,7 +8,7 @@
             <tr>
                 <!-- Artist Favourite-->
                 <th scope="col">Artist</th>
-                <th scope="col">Favourites</th>
+                <th scope="col">Favourite</th>
             </tr>
         </thead>
         <tbody>
@@ -19,7 +19,15 @@
                 <td>
                     <a class="text-primary" href="{% url 'details_artist' artist.id%}">{{artist.artist}}</a>
                 </td>
-                <td>#</td>
+                {% if artist.is_favourite %}
+                <td>
+                    <a class="text-success" href="{% url 'favourite_artist' artist.id%}">Yes</a>
+                </td>
+                {% else %}
+                <td>
+                    <a class="text-danger" href="{% url 'favourite_artist' artist.id%}">No</a>
+                </td>
+                {% endif %}
                 <td><a class="btn btn-danger" href="{% url 'delete_artist' artist.id %}" role="button">Delete {{artist.artist }}</a></td>
             </tr>
             {% endfor %}
