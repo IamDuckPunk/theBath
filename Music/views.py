@@ -1,25 +1,31 @@
 from django.shortcuts import render, get_object_or_404, redirect, render_to_response
 from . import models as music_models
 from . import forms as music_forms
-from .parsers import parse
+from .parsers import parse, create_wiki_songs
 from Account.models import UserProfile
-from django.db.models import Q
+from django.db.models import Q, Count
+from django.contrib.auth.decorators import login_required
+from Account.models import UserProfile
 
-
+@login_required
 def albums(request):
     # Pass list of albums into template
-    albums_list = music_models.Album.objects.order_by('album_title')[:30]
-    args = {'Albums': albums_list}
+    albums_list = music_models.Album.objects.annotate(fav=Count('userprofile')).order_by('-fav')[:30]
+    userprofile = UserProfile.objects.get(pk=request.user.id)
+    args = {
+        'Albums': albums_list,
+        'userprofile': userprofile
+    }
     return render(request, 'music/albums.html', args)
 
-
+@login_required
 def artists(request):
     # Pass list of artists into template
     artists_list = music_models.Artist.objects.order_by('artist')[:30]
     args = {'Artists': artists_list}
     return render(request, 'music/artists.html', args)
 
-
+@login_required
 def genres(request):
     # Pass list of genres into template
     genres_list = music_models.Genre.objects.order_by('genre_title')[:30]
@@ -34,10 +40,11 @@ def index(request):
 def about(request):
     return render(request, 'about.html')
 
-
+@login_required
 def details_album(request, pk):
 
     album = get_object_or_404(music_models.Album, pk=pk)
+    create_wiki_songs(album)
     try:
         info, headers, songs = parse(str(album))
 
@@ -58,30 +65,39 @@ def details_album(request, pk):
         }
     return render(request, 'music/detail.html', args)
 
-
+@login_required
 def details_artist(request, pk):
 
     artist = get_object_or_404(music_models.Artist, pk=pk)
     return render(request, 'music/detail_artist.html', {'artist': artist})
 
-
+@login_required
 def details_genre(request, pk):
 
     genre = get_object_or_404(music_models.Genre, pk=pk)
     return render(request, 'music/detail_genre.html', {'genre': genre})
 
-
+@login_required
 def favourite_album(request, album_id):
+    try:
+        album = get_object_or_404(music_models.Album, pk=album_id)
+        current_user = request.user
+        userprofile = get_object_or_404(UserProfile, pk=current_user.id)
+        if album in userprofile.favourite_albums.all():
+            userprofile.favourite_albums.remove(album)
+            print('Album %s removed' % str(album))
+            userprofile.save()
+        else:
+            userprofile.favourite_albums.add(album)
+            print('Album %s added' % str(album))
+            userprofile.save()
+        return redirect('/albums/')
 
-    album = get_object_or_404(music_models.Album, pk=album_id)
-    if album.is_favourite == True:
-        album.is_favourite = False
-    elif album.is_favourite == False:
-        album.is_favourite = True
-    album.save()
-    return redirect('/albums/')
+    except Exception:
+        return redirect('/albums/')
 
-
+    
+@login_required
 def favourite_artist(request, artist_id):
     artist = get_object_or_404(music_models.Artist, pk=artist_id)
     if artist.is_favourite == True:
@@ -91,7 +107,7 @@ def favourite_artist(request, artist_id):
     artist.save()
     return redirect('/artists/')
 
-
+@login_required
 def favourite_genre(request, genre_id):
 
     genre = get_object_or_404(music_models.Genre, pk=genre_id)
@@ -102,7 +118,7 @@ def favourite_genre(request, genre_id):
     genre.save()
     return redirect('/genres/')
 
-
+@login_required
 def create_artist(request):
 
     form = music_forms.ArtistForm(request.POST or None)
@@ -116,7 +132,7 @@ def create_artist(request):
         }
         return render(request, 'music/create_artist.html', context)
 
-
+@login_required
 def create_genre(request):
 
     form = music_forms.GenreForm(request.POST or None)
@@ -130,7 +146,7 @@ def create_genre(request):
         }
         return render(request, 'music/create_genre.html', context)
 
-
+@login_required
 def create_album(request):
 
     form = music_forms.AlbumForm(request.POST or None)  # bunch of html code
@@ -144,19 +160,19 @@ def create_album(request):
         }
         return render(request, 'music/create_album.html', context)
 
-
+@login_required
 def delete_genre(request, genre_id):
     genre = music_models.Genre.objects.get(pk=genre_id)
     genre.delete()
     return render(request, 'music/genres.html', {'genre': genre})
 
-
+@login_required
 def delete_album(request, album_id):
     album = music_models.Album.objects.get(pk=album_id)
     album.delete()
     return render(request, 'music/albums.html', {'album': album})
 
-
+@login_required
 def delete_artist(request, artist_id):
     artist = music_models.Artist.objects.get(pk=artist_id)
     artist.delete()
@@ -178,7 +194,7 @@ def create_album_wiki(request):
         return render(request, 'music/create_album.html', context)
 
 
-
+@login_required
 def search_albums(request):
     query = request.GET.get("q")
     print(query)
@@ -201,6 +217,5 @@ def search_albums(request):
     else:
         err = "Nothing was typed"
         return render(request, 'search.html', {'err':err})
-
 
 

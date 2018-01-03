@@ -27,7 +27,7 @@
                 </td>
                 {% else %}
                 <td>
-                    <h3> No img </h3>
+                    <img src="/media/empty.jpeg" class="img-responsive" width=55 length=55 >
                 </td>
                 {% endif %}
                 <td>
@@ -37,15 +37,20 @@
                     <a class="text-primary" href="{% url 'details_artist' album.artist.id%}">{{album.artist}}</a>
                 </td>
                 <td>{{album.realeased}}</td>
-                <td>#</td>
+                <td>{{album.userprofile_set.count}}</td>
+                
                
-                {% if album.is_favourite %}
+                {% if album in userprofile.favourite_albums.all %}
                 <td>
-                    <a class="text-success" href="{% url 'favourite_album' album.id%}">Yes</a>
+                    <a href="{% url 'favourite_album' album.id %}" class="btn btn-default btn-sm" role="button">
+                        <span style="color: rgb(230, 128, 142); font-size:2em;" class="glyphicon glyphicon-star" aria-hidden="true"></span>
+                    </a>
                 </td>
                 {% else %}
                 <td>
-                    <a class="text-danger" href="{% url 'favourite_album' album.id%}">No</a>
+                    <a href="{% url 'favourite_album' album.id %}" class="btn btn-default btn-sm" role="button">
+                        <span style="color:  rgb(230, 128, 142);font-size:2em;" class="glyphicon glyphicon-star-empty" aria-hidden="true"></span>
+                    </a>
                 </td>
                 {% endif %}
                 <td>
@@ -63,5 +68,6 @@
 
     </table>
     <a class="btn btn-primary" href="{% url 'create_album' %}" role="button">Add Album</a>
+    <a class="btn btn-primary" href="{% url 'create_album_wiki' %}" role="button">Add Album Wiki</a>
 </div>
 {% endblock %}

@@ -1,0 +1,30 @@
+{% extends 'base.html' %} {% block head %}
+<title>Registration</title>
+{% endblock %} {% block body %}
+<div class="container">
+    <div class="row">
+        <div class="offset-3 col-md-7">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <h3>Register here</h3>
+                    {% if registered %}
+                    <strong>thank you for registering!</strong>
+                    <a href="{% url 'albums' %}">Return to the homepage.</a>
+                    <br /> {% else %}
+                    <form class="form-horizontal" id="user_form" role="form" action="{% url 'register' %}" method="post" enctype="multipart/form-data">
+                        {% csrf_token %} 
+                        {{ user_form.as_p }}
+
+                        <div class="form-group">
+                            <div class="col-sm-offset-2 col-sm-10">
+                                <button type="submit" class="btn btn-success">Submit</button>
+                            </div>
+                        </div>
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

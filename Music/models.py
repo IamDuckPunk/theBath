@@ -1,6 +1,6 @@
 from django.db import models
 from django.urls import reverse
-from django.urls import reverse
+
 
 
 class Genre(models.Model):
@@ -44,7 +44,7 @@ class Album(models.Model):
     # Is favourite album
     is_favourite = models.BooleanField(default=False)
     # Album cover
-    album_cover = models.ImageField(null=True)
+    album_cover = models.ImageField(upload_to='albums', null=True)
 
     def __str__(self):
         return self.album_title

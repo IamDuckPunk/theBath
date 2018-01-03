@@ -8,24 +8,24 @@
 {% block body %}
 <div class='container'>
     <br>
-    <!-- If songs in Album -->
+    <!-- If artists in Genre -->
     {% if genre.artist_set.all %}
     <!-- Table-->
     <table class="table table-hover">
         <thead>
             <tr>
-                <!--Numer Song-->
+                <!-- Artist's name-->
                 <th scope="col">Related Artists</th>
             </tr>
         </thead>
         <tbody>
-            <!-- List of songs-->
+            <!-- List of artists-->
             {% for artist in genre.artist_set.all %}
             <tr>
                 <td><a class="text-primary" href="{% url 'details_artist' artist.id%}">{{artist.artist}}</a></td>
             </tr>
             {% endfor %}
-            <!-- Else - no songs -->
+            <!-- Else - no artists in Genre -->
             {% else %}
             <h3 class="text-danger">No artists in genre's created</h3>
             <a class="btn btn-primary" href="{% url 'create_artist' %}" role="button">Add Artist</a>

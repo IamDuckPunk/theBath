@@ -5,6 +5,9 @@ from django.shortcuts import render, get_object_or_404
 import requests
 from PIL import Image
 from io import BytesIO
+from .models import Album, Song
+
+
 def slugify(string):
     """" Makes a titile slug from the given string """
 
@@ -61,7 +64,19 @@ def get_image(string):
 
 
 
-
+def create_wiki_songs(album):
+    try:
+        album_info, headers_list, songs_list = parse(str(album.album_title))
+        get_album = Album.objects.get(album_title=album)
+        get_song_list = get_album.song_set.all()
+        print(get_song_list)
+        if not get_song_list:
+            for song in songs_list[:-1]:
+                new_song = Song(song_title=song[1],album=get_album, position=song[0].replace('.',''))
+                new_song.save()
+                print(new_song)  
+    except Exception as err:
+        print(err)
 
 
 

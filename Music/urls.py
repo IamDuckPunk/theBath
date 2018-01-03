@@ -24,7 +24,10 @@ urlpatterns = [
     # thebath/albums/create_album/
     url(r'^albums/create_album/$', mus_views.create_album, name='create_album'),
 
-     # thebath/albums/12/edit/
+    # thebath/albums/create_album/
+    url(r'^albums/create_album_wiki/$', mus_views.create_album_wiki, name='create_album_wiki'),
+
+    # thebath/albums/12/edit/
     url(r'^albums/(?P<pk>\d+)/edit/$',
         music_forms.AlbumFormUpdate.as_view(), name='edit_album'),
 
